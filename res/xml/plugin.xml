@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<uexplugins>
+	<plugin
+        className="org.zywx.wbpalmstar.plugin.uexunisound.EUExUnisound" uexName="uexUnisound" >
+        <method name="init"/>
+        <method name="setVADFrontTimeout"/>
+        <method name="setBandwidth"/>
+        <method name="start"/>
+        <method name="textUnderstander"/>
+        <method name="stopUnderstander"/>
+        <method name="cancel"/>
+        <method name="setEngine"/>
+        <method name="setUserData"/>
+        <method name="speaking"/>
+        <method name="cancelSpeaking"/>
+    </plugin>
+</uexplugins>

@@ -1,0 +1,224 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	<link rel="stylesheet" type="text/css" href="css/index.css">
+	
+	<script type="text/javascript">
+	window.uexOnload = function(type){
+		if(type == 0){  
+			uexUnisound.onSpeechStart = onSpeechStart;
+            uexUnisound.onRecognizerResult = onRecognizerResult;
+            uexUnisound.onUnderstanderResult = onUnderstanderResult;
+            uexUnisound.onEnd = onEnd;
+            uexUnisound.onVADTimeout = onVADTimeout;
+            uexUnisound.onUpdateVolume = onUpdateVolume;
+            uexUnisound.stringResult = stringResult;
+            uexUnisound.onUploadUserData = onUploadUserData;
+            uexUnisound.onRecordingStop = onRecordingStop;
+            uexUnisound.onRecordingStart = onRecordingStart;
+            uexUnisound.onSpeakingFinished = onSpeakingFinished;
+            uexUnisound.onSpeakingErrorOccurred = onSpeakingErrorOccurred;
+		}
+	}
+	
+	function init(){
+		var appKey=document.getElementById("appKey").value;
+		var secret=document.getElementById("secret").value;
+		var params = {
+			appKey:appKey,
+			secret:secret
+		};
+		var data = JSON.stringify(params);
+		uexUnisound.init(data);
+	}
+
+	function setVADFrontTimeout(){
+		var frontTime=document.getElementById("frontTime").value;
+		var backTime=document.getElementById("backTime").value;
+		var params = {
+			frontTime:frontTime,
+			backTime:backTime
+		};
+		var data = JSON.stringify(params);
+		uexUnisound.setVADFrontTimeout(data);
+	}
+
+	function setBandwidth(){
+		var rate=document.getElementById("rate").value;
+		var params = {
+			rate:rate
+		};
+		var data = JSON.stringify(params);
+		uexUnisound.setBandwidth(data);
+	}
+
+	function start(){
+		var params = {
+
+		};
+		var data = JSON.stringify(params);
+		uexUnisound.start(data);
+	}
+
+	function textUnderstander(){
+		var textUnderstander=document.getElementById("textUnderstander").value;
+		var params = {
+			text:textUnderstander
+		};
+		var data = JSON.stringify(params);
+		uexUnisound.textUnderstander(data);
+	}
+
+	function stopUnderstander(){
+		var params = {
+
+		};
+		var data = JSON.stringify(params);
+		uexUnisound.stopUnderstander(data);
+	}
+
+	function cancel(){
+		var params = {
+
+		};
+		var data = JSON.stringify(params);
+		uexUnisound.cancel(data);
+	}
+
+	function setEngine(){
+		var engine=document.getElementById("engine").value;
+		var params = {
+			engine:engine
+		};
+		var data = JSON.stringify(params);
+		uexUnisound.setEngine(data);
+	}
+
+	function setUserData(){
+		var userData=document.getElementById("userData").value;
+		var params = {
+			userData:userData
+		};
+		var data = JSON.stringify(params);
+		uexUnisound.setUserData(data);
+	}
+
+	function setFarFeild(){
+		var params = {
+
+		};
+		var data = JSON.stringify(params);
+		uexUnisound.setFarFeild(data);
+	}
+
+	function speaking(){
+		var text=document.getElementById("text").value;
+		var params = {
+			text:text
+		};
+		var data = JSON.stringify(params);
+		uexUnisound.speaking(data);
+	}
+
+	function cancelSpeaking(){
+		var params = {
+
+		};
+		var data = JSON.stringify(params);
+		uexUnisound.cancelSpeaking(data);
+	}
+
+    function onSpeechStart(info){
+        alert('onSpeechStart '+info);
+    }
+
+    function onRecognizerResult(info){
+        alert('onRecognizerResult '+info);
+    }
+
+    function onUnderstanderResult(info){
+        alert('onUnderstanderResult '+info);
+    }
+
+    function onEnd(info){
+        alert('onEnd '+info);
+    }
+
+    function onVADTimeout(info){
+
+    }
+
+    function onUpdateVolume(info){
+
+    }
+
+    function stringResult(info){
+        alert('stringResult '+info);
+    }
+
+    function onUploadUserData(info){
+        alert('onUploadUserData '+info);
+    }
+
+    function onRecordingStop(info){
+        alert('onRecordingStop '+info);
+    }
+
+    function onRecordingStart(info){
+        alert('onRecordingStart '+info);
+    }
+
+    function onSpeakingFinished(info){
+        alert('onSpeakingFinished '+info);
+    }
+
+    function onSpeakingErrorOccurred(info){
+        alert('onSpeakingErrorOccurred '+info);
+    }
+
+</script>
+</head>
+
+<body>
+	<div class="tit">uexDemo对象</div>
+	<div class="conbor">
+		<div class="consj">
+
+			<input class="textbox" type="text" id="appKey" value="onogkebtikocisnl2mqqu4g26f2hoka6wwqgtvyp">
+			<input class="textbox" type="text" id="secret" value="ebc8eb1b685dab180537498ede1d881f">
+			<input class='btn' type='button' value='init' onclick='init()'>
+
+			<input class="textbox" type="text" id="frontTime" value="3000">
+			<input class="textbox" type="text" id="backTime" value="1000">
+			<input class='btn' type='button' value='setVADFrontTimeout' onclick='setVADFrontTimeout()'>
+
+			<input class="textbox" type="text" id="rate" value="1">
+			<input class='btn' type='button' value='setBandwidth' onclick='setBandwidth()'>
+
+			<input class='btn' type='button' value='start' onclick='start()'>
+
+			<input class='btn' type='button' value='stopUnderstander' onclick='stopUnderstander()'>
+
+			<input class='btn' type='button' value='cancel' onclick='cancel()'>
+
+			<input class="textbox" type="text" id="textUnderstander" value="o">
+			<input class='btn' type='button' value='textUnderstander' onclick='textUnderstander()'>
+
+			<input class="textbox" type="text" id="engine" value="1">
+			<input class='btn' type='button' value='setEngine' onclick='setEngine()'>
+
+			<input class="textbox" type="text" id="userData" value='{"1":["aaa","bbb"],"2":["aaa","bbb"]}'>
+			<input class='btn' type='button' value='setUserData' onclick='setUserData()'>
+
+			<input class="textbox" type="text" id="text" value="说话说话">
+			<input class='btn' type='button' value='speaking' onclick='speaking()'>
+
+			<input class='btn' type='button' value='cancelSpeaking' onclick='cancelSpeaking()'>
+
+		</div>
+	</div>
+</body>
+</html>

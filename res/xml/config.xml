@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<uexplugins>
+    <plugin
+        className="org.zywx.wbpalmstar.plugin.uexunisound.EUExUnisound" uexName="uexUnisound" >
+        <method name="init"/>
+        <method name="setVADFrontTimeout"/>
+
+        <method name="setBandwidth"/>
+        <method name="start"/>
+        <method name="textUnderstander"/>
+        <method name="stopUnderstander"/>
+        <method name="cancel"/>
+        <method name="setEngine"/>
+        <method name="onSpeechStart"
+            type="2"/>
+        <method name="onRecognizerResult"
+            type="2"/>
+        <method name="onUnderstanderResult"
+            type="2"/>
+        <method name="onEnd"
+            type="2"/>
+        <method name="onVADTimeout"
+            type="2"/>
+        <method name="onUpdateVolume"
+            type="2"/>
+        <method name="stringResult"
+            type="2"/>
+        <method name="onUploadUserData"
+            type="2"/>
+        <method name="onRecordingStop"
+            type="2"/>
+
+        <method name="setUserData"/>
+        <method name="setFarFeild"/>
+
+        <method name="onRecordingStart"
+            type="2"/>
+        <method name="speaking"/>
+        <method name="onSpeakingFinished"
+            type="2"/>
+        <method name="cancelSpeaking"/>
+        <method name="onSpeakingErrorOccurred"
+            type="2"/>
+
+    </plugin>
+</uexplugins>

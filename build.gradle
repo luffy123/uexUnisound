@@ -2,13 +2,11 @@ apply plugin: 'android'
 
 dependencies {
     compile fileTree(dir: 'libs', include: '*.jar')
-    compile files('libs/usc.jar')
-    compile files('libs/gson-2.2.4.jar')
 }
 
 android {
-    compileSdkVersion 17
-    buildToolsVersion "21.1.2"
+    compileSdkVersion 22
+    buildToolsVersion "23.0.0"
 
     lintOptions {
         abortOnError false

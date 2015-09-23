@@ -1,25 +1,15 @@
 package org.zywx.wbpalmstar.plugin.uexunisound;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
-import com.google.gson.reflect.TypeToken;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.zywx.wbpalmstar.engine.EBrowserView;
 import org.zywx.wbpalmstar.engine.universalex.EUExBase;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import cn.yunzhisheng.common.USCError;
 import cn.yunzhisheng.nlu.basic.USCSpeechUnderstander;
@@ -29,33 +19,20 @@ import cn.yunzhisheng.tts.online.basic.TTSPlayerListener;
 import cn.yunzhisheng.understander.USCUnderstanderResult;
 
 public class EUExUnisound extends EUExBase {
-
+    private static final String TAG = "EUExUnisound";
     private static final String BUNDLE_DATA = "data";
+
     private static final int MSG_INIT = 1;
-    private static final int MSG_SET_V_A_D_FRONT_TIMEOUT = 2;
-    private static final int MSG_SET_BANDWIDTH = 3;
-    private static final int MSG_START = 4;
-    private static final int MSG_TEXT_UNDERSTANDER = 5;
-    private static final int MSG_CANCEL = 6;
-    private static final int MSG_SET_LANGUAGE = 7;
-    private static final int MSG_SET_RECOGNIZATION_TIMEOUT = 8;
-    private static final int MSG_SET_ENGINE = 9;
-    private static final int MSG_STRING_RESULT = 10;
-    private static final int MSG_RESPONSE_TEXT = 11;
-    private static final int MSG_SET_USER_DATA = 12;
-    private static final int MSG_SET_FAR_FEILD = 13;
-    private static final int MSG_PLAY = 14;
-    private static final int MSG_SPEAKING = 15;
-    private static final int MSG_CANCEL_SPEAKING = 16;
-    private static final int MSG_PAUSE_SPEAKING = 17;
-    private static final int MSG_RESUME_SPEAKING = 18;
-    private static final int MSG_STOP_UNDERSTANDER = 19;
+    private static final int MSG_UPDATE_RECOGNIZER_SETTINGS = 2;
+    private static final int MSG_START = 3;
+    private static final int MSG_STOP = 4;
+    private static final int MSG_CANCEL = 5;
+    private static final int MSG_TEXT_UNDERSTANDER = 6;
+    private static final int MSG_SPEAKING = 7;
+    private static final int MSG_CANCEL_SPEAKING = 8;
 
     private USCSpeechUnderstander mUscSpeechUnderstander;
-
     private OnlineTTS mOnlineTTS;
-
-    private Gson mGson;
 
     public EUExUnisound(Context context, EBrowserView eBrowserView) {
         super(context, eBrowserView);
@@ -65,7 +42,6 @@ public class EUExUnisound extends EUExBase {
     protected boolean clean() {
         return false;
     }
-
 
     public void init(String[] params) {
         if (params == null || params.length < 1) {
@@ -82,10 +58,9 @@ public class EUExUnisound extends EUExBase {
     }
 
     private void initMsg(String[] params) {
-        mGson=new Gson();
         String json = params[0];
-        String appKey=null;
-        String secret=null;
+        String appKey = null;
+        String secret = null;
         try {
             JSONObject jsonObject = new JSONObject(json);
             appKey=jsonObject.optString("appKey");
@@ -93,7 +68,7 @@ public class EUExUnisound extends EUExBase {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        mUscSpeechUnderstander=new USCSpeechUnderstander(mContext.getApplicationContext(),appKey,secret);
+        mUscSpeechUnderstander = new USCSpeechUnderstander(mContext.getApplicationContext(),appKey,secret);
         mUscSpeechUnderstander.setListener(new USCSpeechUnderstanderListener() {
 
             @Override
@@ -103,12 +78,12 @@ public class EUExUnisound extends EUExBase {
 
             @Override
             public void onRecordingStart() {
-                callBackPluginJs(JsConst.ON_RECORDING_START,"");
+//                callBackPluginJs(JsConst.ON_RECORDING_START, "");
             }
 
             @Override
             public void onRecordingStop() {
-                callBackPluginJs(JsConst.ON_RECORDING_STOP,"");
+//                callBackPluginJs(JsConst.ON_RECORDING_STOP,"");
             }
 
             @Override
@@ -125,7 +100,7 @@ public class EUExUnisound extends EUExBase {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                callBackPluginJs(JsConst.ON_RECOGNIZER_RESULT,jsonObject.toString());
+                callBackPluginJs(JsConst.ON_RECEIVE_RECOGNIZER_RESULT, jsonObject.toString());
             }
 
             @Override
@@ -141,13 +116,12 @@ public class EUExUnisound extends EUExBase {
 
             @Override
             public void onUnderstanderResult(USCUnderstanderResult uscUnderstanderResult) {
-                callBackPluginJs(JsConst.STRING_RESULT,uscUnderstanderResult.getStringResult());
+                callBackPluginJs(JsConst.ON_RECEIVE_UNDERSTANDER_RESULT,uscUnderstanderResult.getStringResult());
             }
-
 
             @Override
             public void onEnd(USCError uscError) {
-                JSONObject jsonObject=new JSONObject();
+                JSONObject jsonObject = new JSONObject();
                 try {
                     if (uscError==null){
                         jsonObject.put("result", 0);
@@ -161,16 +135,15 @@ public class EUExUnisound extends EUExBase {
             }
         });
         mUscSpeechUnderstander.start();
-        mOnlineTTS=new OnlineTTS(mContext.getApplicationContext(),appKey);
+        mOnlineTTS = new OnlineTTS(mContext.getApplicationContext(),appKey);
         mOnlineTTS.setTTSListener(new TTSPlayerListener() {
             @Override
             public void onPlayBegin() {
-
+                callBackPluginJs(JsConst.ON_SPEAKING_START, "");
             }
 
             @Override
             public void onBuffer() {
-
             }
 
             @Override
@@ -180,6 +153,7 @@ public class EUExUnisound extends EUExBase {
                     try {
                         jsonObject.put("error", uscError.msg);
                     } catch (JSONException e) {
+                        Log.i(TAG, "------onEnd:" + e.getMessage());
                     }
                     callBackPluginJs(JsConst.ON_SPEAKING_ERROR_OCCURRED, jsonObject.toString());
                 }
@@ -192,60 +166,46 @@ public class EUExUnisound extends EUExBase {
         });
     }
 
-    public void setVADFrontTimeout(String[] params) {
-        if (params == null || params.length < 1) {
-            errorCallback(0, 0, "error params!");
-            return;
-        }
+    public void updateRecognizerSettings(String[] params) {
         Message msg = new Message();
         msg.obj = this;
-        msg.what = MSG_SET_V_A_D_FRONT_TIMEOUT;
-        Bundle bd = new Bundle();
-        bd.putStringArray(BUNDLE_DATA, params);
-        msg.setData(bd);
+        msg.what = MSG_UPDATE_RECOGNIZER_SETTINGS;
         mHandler.sendMessage(msg);
     }
 
-    private void setVADFrontTimeoutMsg(String[] params) {
+    //和ios的区别在于不能设置recognizationTimeout，needUnderstander
+    private void updateRecognizerSettingsMsg(String[] params) {
         String json = params[0];
-        String frontTime=null;
-        String backTime=null;
         try {
             JSONObject jsonObject = new JSONObject(json);
-            frontTime=jsonObject.optString("frontTime");
-            backTime=jsonObject.optString("backTime");
-            if (!TextUtils.isEmpty(frontTime)&&!TextUtils.isEmpty(backTime)) {
-                mUscSpeechUnderstander.setVADTimeout(Integer.valueOf(frontTime), Integer.parseInt(backTime));
+            int frontTime = jsonObject.optInt("frontTime", 3000);
+            int backTime = jsonObject.optInt("backTime", 1000);
+            int rate = jsonObject.optInt("rate", 3);
+            int engine = jsonObject.optInt("engine", 1);
+            int language = jsonObject.optInt("language", 1);
+            switch (engine) {
+                case 1: mUscSpeechUnderstander.setEngine("general");break;
+                case 2: mUscSpeechUnderstander.setEngine("poi"); break;
+                case 3: mUscSpeechUnderstander.setEngine("song"); break;
+                case 4: mUscSpeechUnderstander.setEngine("movietv"); break;
+                case 5: mUscSpeechUnderstander.setEngine("medical"); break;
+                default: mUscSpeechUnderstander.setEngine("general");break;
             }
+            switch (rate) {
+                case 1: mUscSpeechUnderstander.setBandwidth(USCSpeechUnderstander.BANDWIDTH_AUTO); break;
+                case 2: mUscSpeechUnderstander.setBandwidth(USCSpeechUnderstander.RATE_8K); break;
+                case 3: mUscSpeechUnderstander.setBandwidth(USCSpeechUnderstander.RATE_16K); break;
+                default: mUscSpeechUnderstander.setBandwidth(USCSpeechUnderstander.BANDWIDTH_AUTO); break;
+            }
+            switch (language) {
+                case 1: mUscSpeechUnderstander.setLanguage(USCSpeechUnderstander.LANGUAGE_CHINESE); break;
+                case 2: mUscSpeechUnderstander.setLanguage(USCSpeechUnderstander.LANGUAGE_ENGLISH); break;
+                case 3: mUscSpeechUnderstander.setLanguage(USCSpeechUnderstander.LANGUAGE_CANTONESE); break;
+                default: mUscSpeechUnderstander.setLanguage(USCSpeechUnderstander.LANGUAGE_CHINESE); break;
+            }
+            mUscSpeechUnderstander.setVADTimeout(frontTime, backTime);
         } catch (JSONException e) {
             e.printStackTrace();
-        }
-    }
-
-    public void setBandwidth(String[] params) {
-        if (params == null || params.length < 1) {
-            errorCallback(0, 0, "error params!");
-            return;
-        }
-        Message msg = new Message();
-        msg.obj = this;
-        msg.what = MSG_SET_BANDWIDTH;
-        Bundle bd = new Bundle();
-        bd.putStringArray(BUNDLE_DATA, params);
-        msg.setData(bd);
-        mHandler.sendMessage(msg);
-    }
-
-    private void setBandwidthMsg(String[] params) {
-        String json = params[0];
-        String rate=null;
-        try {
-            JSONObject jsonObject = new JSONObject(json);
-            rate=jsonObject.getString("rate");
-            if (!TextUtils.isEmpty(rate)) {
-                mUscSpeechUnderstander.setBandwidth(Integer.valueOf(rate));
-            }
-        } catch (JSONException e) {
         }
     }
 
@@ -260,31 +220,15 @@ public class EUExUnisound extends EUExBase {
         mUscSpeechUnderstander.start();
     }
 
-    public void textUnderstander(String[] params) {
-        if (params == null || params.length < 1) {
-            errorCallback(0, 0, "error params!");
-            return;
-        }
+    public void stop(String[] params) {
         Message msg = new Message();
         msg.obj = this;
-        msg.what = MSG_TEXT_UNDERSTANDER;
-        Bundle bd = new Bundle();
-        bd.putStringArray(BUNDLE_DATA, params);
-        msg.setData(bd);
+        msg.what = MSG_STOP;
         mHandler.sendMessage(msg);
     }
 
-    private void textUnderstanderMsg(String[] params) {
-        String json = params[0];
-        String text=null;
-        try {
-            JSONObject jsonObject = new JSONObject(json);
-            text=jsonObject.optString("text");
-        } catch (JSONException e) {
-        }
-        if (!TextUtils.isEmpty(text)){
-            mUscSpeechUnderstander.textUnderstander(text);
-        }
+    private void stopMsg(String[] params) {
+        mUscSpeechUnderstander.stop();
     }
 
     public void cancel(String[] params) {
@@ -298,138 +242,31 @@ public class EUExUnisound extends EUExBase {
         mUscSpeechUnderstander.cancel();
     }
 
-    public void setLanguage(String[] params) {
+    public void runTextUnderstand(String[] params) {
         if (params == null || params.length < 1) {
             errorCallback(0, 0, "error params!");
             return;
         }
         Message msg = new Message();
         msg.obj = this;
-        msg.what = MSG_SET_LANGUAGE;
+        msg.what = MSG_TEXT_UNDERSTANDER;
         Bundle bd = new Bundle();
         bd.putStringArray(BUNDLE_DATA, params);
         msg.setData(bd);
         mHandler.sendMessage(msg);
     }
 
-    private void setLanguageMsg(String[] params) {
+    private void runTextUnderstandMsg(String[] params) {
         String json = params[0];
-        String language;
+        String text=null;
         try {
             JSONObject jsonObject = new JSONObject(json);
-            language=jsonObject.optString("language");
-            if (!TextUtils.isEmpty(language)){
-
-            }
+            text = jsonObject.optString("text");
         } catch (JSONException e) {
-            e.printStackTrace();
+            Log.i(TAG, e.getMessage());
         }
-    }
-
-    public void setRecognizationTimeout(String[] params) {
-        if (params == null || params.length < 1) {
-            errorCallback(0, 0, "error params!");
-            return;
-        }
-        Message msg = new Message();
-        msg.obj = this;
-        msg.what = MSG_SET_RECOGNIZATION_TIMEOUT;
-        Bundle bd = new Bundle();
-        bd.putStringArray(BUNDLE_DATA, params);
-        msg.setData(bd);
-        mHandler.sendMessage(msg);
-    }
-
-    private void setRecognizationTimeoutMsg(String[] params) {
-        String json = params[0];
-        String time=null;
-        try {
-            JSONObject jsonObject = new JSONObject(json);
-            time=jsonObject.optString("time");
-            if (!TextUtils.isEmpty(time)){
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void setEngine(String[] params) {
-        if (params == null || params.length < 1) {
-            errorCallback(0, 0, "error params!");
-            return;
-        }
-        Message msg = new Message();
-        msg.obj = this;
-        msg.what = MSG_SET_ENGINE;
-        Bundle bd = new Bundle();
-        bd.putStringArray(BUNDLE_DATA, params);
-        msg.setData(bd);
-        mHandler.sendMessage(msg);
-    }
-
-    private void setEngineMsg(String[] params) {
-        String json = params[0];
-        String engine=null;
-        try {
-            JSONObject jsonObject = new JSONObject(json);
-            engine=jsonObject.optString("engine");
-            if (!TextUtils.isEmpty(engine)){
-                mUscSpeechUnderstander.setEngine(engine);
-            }
-        } catch (JSONException e) {
-        }
-    }
-
-    public void setUserData(String[] params) {
-        if (params == null || params.length < 1) {
-            errorCallback(0, 0, "error params!");
-            return;
-        }
-        Message msg = new Message();
-        msg.obj = this;
-        msg.what = MSG_SET_USER_DATA;
-        Bundle bd = new Bundle();
-        bd.putStringArray(BUNDLE_DATA, params);
-        msg.setData(bd);
-        mHandler.sendMessage(msg);
-    }
-
-    private void setUserDataMsg(String[] params) {
-        String json = params[0];
-        Map<Integer,List<String>> userData;
-        try {
-            userData=mGson.fromJson(json,new TypeToken<Map<Integer,List<String>>>(){}.getType());
-            if (userData!=null){
-                mUscSpeechUnderstander.setUserData(userData);
-            }
-        } catch (JsonSyntaxException e) {
-        }
-    }
-
-    public void setFarFeild(String[] params) {
-        if (params == null || params.length < 1) {
-            errorCallback(0, 0, "error params!");
-            return;
-        }
-        Message msg = new Message();
-        msg.obj = this;
-        msg.what = MSG_SET_FAR_FEILD;
-        Bundle bd = new Bundle();
-        bd.putStringArray(BUNDLE_DATA, params);
-        msg.setData(bd);
-        mHandler.sendMessage(msg);
-    }
-
-    private void setFarFeildMsg(String[] params) {
-        String json = params[0];
-        String farFeild=null;
-        try {
-            JSONObject jsonObject = new JSONObject(json);
-            farFeild=jsonObject.optString("farFeild");
-        } catch (JSONException e) {
-        }
-        if (!TextUtils.isEmpty(farFeild)){
-
+        if (!TextUtils.isEmpty(text)){
+            mUscSpeechUnderstander.textUnderstander(text);
         }
     }
 
@@ -472,17 +309,6 @@ public class EUExUnisound extends EUExBase {
         mOnlineTTS.stop();
     }
 
-    public void stopUnderstander(String[] params) {
-        Message msg = new Message();
-        msg.obj = this;
-        msg.what = MSG_STOP_UNDERSTANDER;
-        mHandler.sendMessage(msg);
-    }
-
-    private void stopUnderstanderMsg(String[] params) {
-        mUscSpeechUnderstander.stop();
-    }
-
     @Override
     public void onHandleMessage(Message message) {
         if(message == null){
@@ -494,35 +320,20 @@ public class EUExUnisound extends EUExBase {
             case MSG_INIT:
                 initMsg(bundle.getStringArray(BUNDLE_DATA));
                 break;
-            case MSG_SET_V_A_D_FRONT_TIMEOUT:
-                setVADFrontTimeoutMsg(bundle.getStringArray(BUNDLE_DATA));
-                break;
-            case MSG_SET_BANDWIDTH:
-                setBandwidthMsg(bundle.getStringArray(BUNDLE_DATA));
+            case MSG_UPDATE_RECOGNIZER_SETTINGS:
+                updateRecognizerSettings(bundle.getStringArray(BUNDLE_DATA));
                 break;
             case MSG_START:
-                startMsg(bundle.getStringArray(BUNDLE_DATA));
+                start(bundle.getStringArray(BUNDLE_DATA));
                 break;
-            case MSG_TEXT_UNDERSTANDER:
-                textUnderstanderMsg(bundle.getStringArray(BUNDLE_DATA));
+            case MSG_STOP:
+                stop(bundle.getStringArray(BUNDLE_DATA));
                 break;
             case MSG_CANCEL:
-                cancelMsg(bundle.getStringArray(BUNDLE_DATA));
+                cancel(bundle.getStringArray(BUNDLE_DATA));
                 break;
-            case MSG_SET_LANGUAGE:
-                setLanguageMsg(bundle.getStringArray(BUNDLE_DATA));
-                break;
-            case MSG_SET_RECOGNIZATION_TIMEOUT:
-                setRecognizationTimeoutMsg(bundle.getStringArray(BUNDLE_DATA));
-                break;
-            case MSG_SET_ENGINE:
-                setEngineMsg(bundle.getStringArray(BUNDLE_DATA));
-                break;
-            case MSG_SET_USER_DATA:
-                setUserDataMsg(bundle.getStringArray(BUNDLE_DATA));
-                break;
-            case MSG_SET_FAR_FEILD:
-                setFarFeildMsg(bundle.getStringArray(BUNDLE_DATA));
+            case MSG_TEXT_UNDERSTANDER:
+                runTextUnderstandMsg(bundle.getStringArray(BUNDLE_DATA));
                 break;
             case MSG_SPEAKING:
                 speakingMsg(bundle.getStringArray(BUNDLE_DATA));
@@ -530,11 +341,9 @@ public class EUExUnisound extends EUExBase {
             case MSG_CANCEL_SPEAKING:
                 cancelSpeakingMsg(bundle.getStringArray(BUNDLE_DATA));
                 break;
-            case MSG_STOP_UNDERSTANDER:
-                stopUnderstanderMsg(bundle.getStringArray(BUNDLE_DATA));
-                break;
             default:
-                super.onHandleMessage(message);        }
+                super.onHandleMessage(message);
+        }
     }
 
     private void callBackPluginJs(String methodName, String jsonData){
@@ -542,5 +351,4 @@ public class EUExUnisound extends EUExBase {
                 + methodName + "('" + jsonData + "');}";
         onCallback(js);
     }
-
 }

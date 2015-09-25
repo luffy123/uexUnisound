@@ -58,6 +58,10 @@ public class EUExUnisound extends EUExBase {
     }
 
     private void initMsg(String[] params) {
+        if (params == null || params.length < 1) {
+            errorCallback(0, 0, "error params!");
+            return;
+        }
         String json = params[0];
         String appKey = null;
         String secret = null;
@@ -73,7 +77,7 @@ public class EUExUnisound extends EUExBase {
 
             @Override
             public void onSpeechStart() {
-                callBackPluginJs(JsConst.ON_SPEECH_START,"");
+                callBackPluginJs(JsConst.ON_SPEECH_START, "");
             }
 
             @Override
@@ -88,15 +92,15 @@ public class EUExUnisound extends EUExBase {
 
             @Override
             public void onVADTimeout() {
-                callBackPluginJs(JsConst.ON_V_A_D_TIMEOUT,"");
+                callBackPluginJs(JsConst.ON_V_A_D_TIMEOUT, "");
             }
 
             @Override
             public void onRecognizerResult(String result, boolean isLast) {
-                JSONObject jsonObject=new JSONObject();
+                JSONObject jsonObject = new JSONObject();
                 try {
-                    jsonObject.put("result",result);
-                    jsonObject.put("isLast",isLast);
+                    jsonObject.put("result", result);
+                    jsonObject.put("isLast", isLast);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -105,36 +109,35 @@ public class EUExUnisound extends EUExBase {
 
             @Override
             public void onUpdateVolume(int i) {
-                JSONObject jsonObject=new JSONObject();
+                JSONObject jsonObject = new JSONObject();
                 try {
-                    jsonObject.put("volume",i);
+                    jsonObject.put("volume", i);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                callBackPluginJs(JsConst.ON_UPDATE_VOLUME,jsonObject.toString());
+                callBackPluginJs(JsConst.ON_UPDATE_VOLUME, jsonObject.toString());
             }
 
             @Override
             public void onUnderstanderResult(USCUnderstanderResult uscUnderstanderResult) {
-                callBackPluginJs(JsConst.ON_RECEIVE_UNDERSTANDER_RESULT,uscUnderstanderResult.getStringResult());
+                callBackPluginJs(JsConst.ON_RECEIVE_UNDERSTANDER_RESULT, uscUnderstanderResult.getStringResult());
             }
 
             @Override
             public void onEnd(USCError uscError) {
                 JSONObject jsonObject = new JSONObject();
                 try {
-                    if (uscError==null){
+                    if (uscError == null) {
                         jsonObject.put("result", 0);
-                    }else {
+                    } else {
                         jsonObject.put("result", uscError.code);
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                callBackPluginJs(JsConst.ON_END,jsonObject.toString());
+                callBackPluginJs(JsConst.ON_END, jsonObject.toString());
             }
         });
-        mUscSpeechUnderstander.start();
         mOnlineTTS = new OnlineTTS(mContext.getApplicationContext(),appKey);
         mOnlineTTS.setTTSListener(new TTSPlayerListener() {
             @Override
@@ -175,6 +178,10 @@ public class EUExUnisound extends EUExBase {
 
     //和ios的区别在于不能设置recognizationTimeout，needUnderstander
     private void updateRecognizerSettingsMsg(String[] params) {
+        if (params == null || params.length < 1) {
+            errorCallback(0, 0, "error params!");
+            return;
+        }
         String json = params[0];
         try {
             JSONObject jsonObject = new JSONObject(json);
@@ -243,10 +250,6 @@ public class EUExUnisound extends EUExBase {
     }
 
     public void runTextUnderstand(String[] params) {
-        if (params == null || params.length < 1) {
-            errorCallback(0, 0, "error params!");
-            return;
-        }
         Message msg = new Message();
         msg.obj = this;
         msg.what = MSG_TEXT_UNDERSTANDER;
@@ -257,6 +260,10 @@ public class EUExUnisound extends EUExBase {
     }
 
     private void runTextUnderstandMsg(String[] params) {
+        if (params == null || params.length < 1) {
+            errorCallback(0, 0, "error params!");
+            return;
+        }
         String json = params[0];
         String text=null;
         try {
@@ -285,6 +292,10 @@ public class EUExUnisound extends EUExBase {
     }
 
     private void speakingMsg(String[] params) {
+        if (params == null || params.length < 1) {
+            errorCallback(0, 0, "error params!");
+            return;
+        }
         String json = params[0];
         String text=null;
         try {
@@ -321,16 +332,16 @@ public class EUExUnisound extends EUExBase {
                 initMsg(bundle.getStringArray(BUNDLE_DATA));
                 break;
             case MSG_UPDATE_RECOGNIZER_SETTINGS:
-                updateRecognizerSettings(bundle.getStringArray(BUNDLE_DATA));
+                updateRecognizerSettingsMsg(bundle.getStringArray(BUNDLE_DATA));
                 break;
             case MSG_START:
-                start(bundle.getStringArray(BUNDLE_DATA));
+                startMsg(bundle.getStringArray(BUNDLE_DATA));
                 break;
             case MSG_STOP:
-                stop(bundle.getStringArray(BUNDLE_DATA));
+                stopMsg(bundle.getStringArray(BUNDLE_DATA));
                 break;
             case MSG_CANCEL:
-                cancel(bundle.getStringArray(BUNDLE_DATA));
+                cancelMsg(bundle.getStringArray(BUNDLE_DATA));
                 break;
             case MSG_TEXT_UNDERSTANDER:
                 runTextUnderstandMsg(bundle.getStringArray(BUNDLE_DATA));

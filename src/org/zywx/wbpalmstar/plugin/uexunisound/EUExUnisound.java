@@ -173,6 +173,9 @@ public class EUExUnisound extends EUExBase {
         Message msg = new Message();
         msg.obj = this;
         msg.what = MSG_UPDATE_RECOGNIZER_SETTINGS;
+        Bundle bd = new Bundle();
+        bd.putStringArray(BUNDLE_DATA, params);
+        msg.setData(bd);
         mHandler.sendMessage(msg);
     }
 
@@ -191,12 +194,12 @@ public class EUExUnisound extends EUExBase {
             int engine = jsonObject.optInt("engine", 1);
             int language = jsonObject.optInt("language", 1);
             switch (engine) {
-                case 1: mUscSpeechUnderstander.setEngine("general");break;
-                case 2: mUscSpeechUnderstander.setEngine("poi"); break;
-                case 3: mUscSpeechUnderstander.setEngine("song"); break;
-                case 4: mUscSpeechUnderstander.setEngine("movietv"); break;
-                case 5: mUscSpeechUnderstander.setEngine("medical"); break;
-                default: mUscSpeechUnderstander.setEngine("general");break;
+                case 1: mUscSpeechUnderstander.setEngine(USCSpeechUnderstander.MODEL_TYPE_GENERAL);break;
+                case 2: mUscSpeechUnderstander.setEngine(USCSpeechUnderstander.MODEL_TYPE_POI); break;
+                case 3: mUscSpeechUnderstander.setEngine(USCSpeechUnderstander.MODEL_TYPE_FOOD); break;
+                case 4: mUscSpeechUnderstander.setEngine(USCSpeechUnderstander.MODEL_TYPE_MOVIETV); break;
+                case 5: mUscSpeechUnderstander.setEngine(USCSpeechUnderstander.MODEL_TYPE_MEDICAL); break;
+                default: mUscSpeechUnderstander.setEngine(USCSpeechUnderstander.MODEL_TYPE_GENERAL);break;
             }
             switch (rate) {
                 case 1: mUscSpeechUnderstander.setBandwidth(USCSpeechUnderstander.BANDWIDTH_AUTO); break;
@@ -210,9 +213,9 @@ public class EUExUnisound extends EUExBase {
                 case 3: mUscSpeechUnderstander.setLanguage(USCSpeechUnderstander.LANGUAGE_CANTONESE); break;
                 default: mUscSpeechUnderstander.setLanguage(USCSpeechUnderstander.LANGUAGE_CHINESE); break;
             }
-            mUscSpeechUnderstander.setVADTimeout(frontTime, backTime);
+           mUscSpeechUnderstander.setVADTimeout(frontTime, backTime);
         } catch (JSONException e) {
-            e.printStackTrace();
+            Log.i(TAG, e.getMessage());
         }
     }
 

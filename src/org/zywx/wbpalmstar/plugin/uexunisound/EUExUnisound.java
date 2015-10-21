@@ -82,12 +82,13 @@ public class EUExUnisound extends EUExBase {
 
             @Override
             public void onRecordingStart() {
-//                callBackPluginJs(JsConst.ON_RECORDING_START, "");
+                callBackPluginJs(JsConst.ON_RECORDING_START, "");
             }
+
 
             @Override
             public void onRecordingStop() {
-//                callBackPluginJs(JsConst.ON_RECORDING_STOP,"");
+                callBackPluginJs(JsConst.ON_RECORDING_STOP,"");
             }
 
             @Override

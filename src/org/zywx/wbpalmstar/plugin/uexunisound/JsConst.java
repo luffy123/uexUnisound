@@ -8,8 +8,9 @@ public class JsConst {
     public static final String ON_V_A_D_TIMEOUT = "uexUnisound.onVADTimeout";
     public static final String ON_UPDATE_VOLUME = "uexUnisound.onUpdateVolume";
 
-//    public static final String ON_RECORDING_START = "uexUnisound.onRecordingStart";
-//    public static final String ON_RECORDING_STOP = "uexUnisound.onRecordingStop";
+    //开始录音的回调，android中开始录音，只有onRecordingStart, 没有onRecognizerStart。
+    public static final String ON_RECORDING_START = "uexUnisound.onRecognizerStart";
+    public static final String ON_RECORDING_STOP = "uexUnisound.onRecordingStop";
 
     public static final String ON_RECEIVE_UNDERSTANDER_RESULT = "uexUnisound.onReceiveUnderstanderResult ";
 

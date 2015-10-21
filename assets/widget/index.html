@@ -18,6 +18,14 @@
                 document.getElementById('TestCallBack1').innerHTML="onSpeechStart";
                 document.getElementById('TestData1').innerHTML=data;
             };
+
+            uexUnisound.onRecognizerStart = function(data) {
+                alert("onRecognizerStart");
+            }
+
+            uexUnisound.onRecordingStop = function(data) {
+                alert("onRecordingStop");
+            }
             //onReceiveRecognizerResult
             var result="";
             uexUnisound.onReceiveRecognizerResult=function(info){

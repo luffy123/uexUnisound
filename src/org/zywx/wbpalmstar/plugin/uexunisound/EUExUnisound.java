@@ -43,24 +43,10 @@ public class EUExUnisound extends EUExBase {
         return false;
     }
 
-    public void init(String[] params) {
+    public boolean init(String[] params) {
         if (params == null || params.length < 1) {
             errorCallback(0, 0, "error params!");
-            return;
-        }
-        Message msg = new Message();
-        msg.obj = this;
-        msg.what = MSG_INIT;
-        Bundle bd = new Bundle();
-        bd.putStringArray(BUNDLE_DATA, params);
-        msg.setData(bd);
-        mHandler.sendMessage(msg);
-    }
-
-    private void initMsg(String[] params) {
-        if (params == null || params.length < 1) {
-            errorCallback(0, 0, "error params!");
-            return;
+            return false;
         }
         String json = params[0];
         String appKey = null;
@@ -168,6 +154,7 @@ public class EUExUnisound extends EUExBase {
                 callBackPluginJs(JsConst.ON_SPEAKING_FINISHED, "");
             }
         });
+        return true;
     }
 
     public void updateRecognizerSettings(String[] params) {
@@ -331,10 +318,6 @@ public class EUExUnisound extends EUExBase {
         }
         Bundle bundle=message.getData();
         switch (message.what) {
-
-            case MSG_INIT:
-                initMsg(bundle.getStringArray(BUNDLE_DATA));
-                break;
             case MSG_UPDATE_RECOGNIZER_SETTINGS:
                 updateRecognizerSettingsMsg(bundle.getStringArray(BUNDLE_DATA));
                 break;

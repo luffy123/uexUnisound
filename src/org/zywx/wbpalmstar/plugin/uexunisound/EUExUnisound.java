@@ -143,7 +143,7 @@ public class EUExUnisound extends EUExBase {
                     try {
                         jsonObject.put("error", uscError.msg);
                     } catch (JSONException e) {
-                        Log.i(TAG, "------onEnd:" + e.getMessage());
+                        Log.i(TAG, "onEnd:" + e.getMessage());
                     }
                     callBackPluginJs(JsConst.ON_SPEAKING_ERROR_OCCURRED, jsonObject.toString());
                 }

@@ -24,7 +24,7 @@ if (UNIT_TEST) {
 
         "runTextUnderstand": function(){
             var data = {
-                test:"我爱你"
+                text:"我爱你"
             }
             uexUnisound.runTextUnderstand(JSON.stringify(data));
             UNIT_TEST.assert(true);

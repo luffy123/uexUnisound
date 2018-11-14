@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <uexplugins>
-    <plugin uexName="uexUnisound" version="4.0.0" build="0">
-        <info>0:云知声插件</info>
+    <plugin uexName="uexUnisound" version="4.3.0" build="1">
+        <info>1:添加动态权限申请</info>
+        <build>0:云知声插件</build>
     </plugin>
 </uexplugins>

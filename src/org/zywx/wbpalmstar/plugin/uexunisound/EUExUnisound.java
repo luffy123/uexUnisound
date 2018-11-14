@@ -1,6 +1,8 @@
 package org.zywx.wbpalmstar.plugin.uexunisound;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Message;
 import android.text.TextUtils;
@@ -44,6 +46,11 @@ public class EUExUnisound extends EUExBase {
     }
 
     public boolean init(String[] params) {
+        // android6.0以上动态权限申请
+        if (mContext.checkCallingOrSelfPermission(Manifest.permission.RECORD_AUDIO)
+                != PackageManager.PERMISSION_GRANTED){
+            errorCallback(0,0,"请先设置权限" + Manifest.permission.RECORD_AUDIO);
+        }
         if (params == null || params.length < 1) {
             errorCallback(0, 0, "error params!");
             return false;

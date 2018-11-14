@@ -6,9 +6,9 @@ if (UNIT_TEST) {
                appKey:"fjxvybmv65mh6qdcj5chwi6vaetsvvwuj7ey5gyh",
                secret:"1c22d036487da0bd69c791788e5870e6"
            }
+           uexWidgetOne.cbError = cbError;
            uexUnisound.init(JSON.stringify(data));
            UNIT_TEST.assert(true);
-
         },
         "updateRecognizerSettings": function(){
            var data = {
@@ -165,4 +165,8 @@ if (UNIT_TEST) {
 //        }
     };
     UNIT_TEST.addCase("unisoundCase", uexUnisoundCase);
+}
+
+function cbError(opId,dataType,data){
+    alert(data);
 }
